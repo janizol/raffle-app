@@ -40,44 +40,36 @@ app.get('/api/available-numbers', (req, res) => {
 });
 
 // POST reserve numbers
-app.post('/api/reserve', async (req, res) => {
+app.post('/api/reserve', (req, res) => {
   const { name, student, numbers } = req.body;
 
   if (!name || !student || !numbers || !Array.isArray(numbers)) {
-    return res.status(400).json({ error: "Invalid input" });
+    return res.status(400).json({ error: 'Invalid input' });
   }
 
   if (numbers.length === 0 || numbers.length > 20) {
-    return res.status(400).json({ error: "Select between 1 and 20 numbers" });
+    return res.status(400).json({ error: 'Select between 1 and 20 numbers' });
   }
 
-  try {
-    const data = await fs.readFile(dataFile, 'utf-8');
-    const reservations = JSON.parse(data);
-    const reservedNumbers = reservations.flatMap(r => r.numbers);
+  const reservations = loadReservations();
+  const reservedNumbers = reservations.flatMap(r => r.numbers);
 
-    const unavailable = numbers.filter(n => reservedNumbers.includes(n));
-    if (unavailable.length > 0) {
-      return res.status(400).json({ error: `Numbers already taken: ${unavailable.join(", ")}` });
-    }
-
-    // ✅ Add timestamp here
-    reservations.push({
-      name,
-      student,
-      numbers,
-      timestamp: new Date().toISOString()
-    });
-
-    await fs.writeFile(dataFile, JSON.stringify(reservations, null, 2));
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error saving reservation" });
+  // Check availability
+  const unavailable = numbers.filter(n => reservedNumbers.includes(n));
+  if (unavailable.length > 0) {
+    return res.status(400).json({ error: `Numbers already taken: ${unavailable.join(', ')}` });
   }
+
+  reservations.push({
+    name,
+    student,
+    numbers,
+    timestamp: new Date().toISOString()
+  });
+  saveReservations(reservations);
+
+  res.json({ success: true });
 });
-
 
 // GET export CSV
 app.get('/api/export', (req, res) => {
