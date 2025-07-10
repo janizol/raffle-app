@@ -15,35 +15,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     const response = await fetch('/api/available-numbers');
     const data = await response.json();
   
-    data.available.forEach(number => {
+    const allNumbers = Array.from({ length: 100 }, (_, i) => i + 1);
+    const availableSet = new Set(data.available);
+  
+    const selectedNumbers = new Set();
+  
+    allNumbers.forEach(number => {
       const div = document.createElement('div');
       div.textContent = number;
-      div.classList.add('number-button');
       div.dataset.number = number;
+  
+      if (availableSet.has(number)) {
+        div.classList.add('number-button');
+      } else {
+        div.classList.add('number-button', 'unavailable');
+      }
+  
       numbersContainer.appendChild(div);
     });
   
-    // Track selected numbers
-    const selectedNumbers = new Set();
-  
     numbersContainer.addEventListener('click', (e) => {
-      if (e.target.classList.contains('number-button')) {
-        const num = parseInt(e.target.dataset.number, 10);
-        if (selectedNumbers.has(num)) {
-          selectedNumbers.delete(num);
-          e.target.classList.remove('selected');
-        } else {
-          if (selectedNumbers.size >= 20) {
-            alert('You can select up to 20 numbers.');
-            return;
-          }
-          selectedNumbers.add(num);
-          e.target.classList.add('selected');
+      const target = e.target;
+      if (!target.classList.contains('number-button') || target.classList.contains('unavailable')) {
+        return;
+      }
+  
+      const num = parseInt(target.dataset.number, 10);
+  
+      if (selectedNumbers.has(num)) {
+        selectedNumbers.delete(num);
+        target.classList.remove('selected');
+      } else {
+        if (selectedNumbers.size >= 20) {
+          alert('You can select up to 20 numbers.');
+          return;
         }
+        selectedNumbers.add(num);
+        target.classList.add('selected');
       }
     });
   
-    // Handle form submit
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
   
@@ -65,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
   
       if (res.ok) {
-        message.textContent = 'Reservation successful!';
+        message.textContent = 'Reservation successful! Refresh to see updated numbers.';
         form.reset();
         selectedNumbers.clear();
         numbersContainer.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
