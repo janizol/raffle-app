@@ -56,34 +56,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   
     form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-  
-      if (selectedNumbers.size === 0) {
-        alert('Please select at least one number.');
-        return;
-      }
-  
-      const body = {
-        name: nameInput.value.trim(),
-        student: studentInput.value.trim(),
-        numbers: Array.from(selectedNumbers)
-      };
-  
-      const res = await fetch('/api/reserve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        e.preventDefault();
+      
+        if (selectedNumbers.size === 0) {
+          alert('Please select at least one number.');
+          return;
+        }
+      
+        const body = {
+          name: nameInput.value.trim(),
+          student: studentInput.value.trim(),
+          numbers: Array.from(selectedNumbers)
+        };
+      
+        const res = await fetch('/api/reserve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+      
+        if (res.ok) {
+          message.textContent = 'Reservation successful!';
+          form.reset();
+          selectedNumbers.clear();
+      
+          // Refresh availability
+          await refreshAvailability();
+        } else {
+          const err = await res.json();
+          message.textContent = err.error || 'Error submitting.';
+        }
       });
-  
-      if (res.ok) {
-        message.textContent = 'Reservation successful! Refresh to see updated numbers.';
-        form.reset();
-        selectedNumbers.clear();
-        numbersContainer.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-      } else {
-        const err = await res.json();
-        message.textContent = err.error || 'Error submitting.';
+      
+      async function refreshAvailability() {
+        const response = await fetch('/api/available-numbers');
+        const data = await response.json();
+        const availableSet = new Set(data.available);
+      
+        document.querySelectorAll('.number-button').forEach(div => {
+          const num = parseInt(div.dataset.number, 10);
+      
+          if (availableSet.has(num)) {
+            div.classList.remove('unavailable', 'selected');
+            div.classList.add('available');
+          } else {
+            div.classList.add('unavailable');
+            div.classList.remove('selected');
+          }
+        });
       }
-    });
+      
   });
   

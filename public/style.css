@@ -95,4 +95,10 @@ body {
     font-weight: 600;
     color: #333;
   }
-  
+
+  .number-button.available {
+    background: #f7f7f7;
+    color: #333;
+    cursor: pointer;
+    border-color: #ccc;
+  }
