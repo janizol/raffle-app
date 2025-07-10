@@ -1,0 +1,68 @@
+body {
+    font-family: sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    max-width: 500px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  form label {
+    display: block;
+    margin-top: 10px;
+  }
+  
+  form input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+  }
+  
+  #numbers-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 5px;
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .number-button {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #333;
+    background: #eee;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .number-button.selected {
+    background: #4caf50;
+    color: #fff;
+  }
+  
+  button[type="submit"] {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background: #2196f3;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  #message {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
