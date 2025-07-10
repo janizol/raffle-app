@@ -35,25 +35,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   
     numbersContainer.addEventListener('click', (e) => {
-      const target = e.target;
-      if (!target.classList.contains('number-button') || target.classList.contains('unavailable')) {
-        return;
-      }
-  
-      const num = parseInt(target.dataset.number, 10);
-  
-      if (selectedNumbers.has(num)) {
-        selectedNumbers.delete(num);
-        target.classList.remove('selected');
-      } else {
-        if (selectedNumbers.size >= 20) {
-          alert('You can select up to 20 numbers.');
+        const target = e.target;
+        if (!target.classList.contains('number-button') || target.classList.contains('unavailable')) {
           return;
         }
-        selectedNumbers.add(num);
-        target.classList.add('selected');
-      }
-    });
+      
+        const num = parseInt(target.dataset.number, 10);
+      
+        if (selectedNumbers.has(num)) {
+          selectedNumbers.delete(num);
+          target.classList.remove('selected');
+        } else {
+          if (selectedNumbers.size >= 20) {
+            alert('You can select up to 20 numbers.');
+            return;
+          }
+          selectedNumbers.add(num);
+          target.classList.add('selected');
+        }
+      });      
   
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -98,13 +98,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       
           if (availableSet.has(num)) {
             div.classList.remove('unavailable', 'selected');
-            div.classList.add('available');
           } else {
             div.classList.add('unavailable');
             div.classList.remove('selected');
           }
         });
       }
+      
       
   });
   
